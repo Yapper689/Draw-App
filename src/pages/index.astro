@@ -1,0 +1,27 @@
+---
+---
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whiteboard</title>
+    <style>
+        body {
+            overflow: hidden;
+        }
+        .whiteboard {
+            background-color: #ffffff;
+            max-width: 100%;
+            max-height: 100%;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+    <div class="whiteboard">
+        <canvas id="canvas" width="1920" height="1080"></canvas>
+    </div>
+    <!-- God Bless 'https://flaviocopes.com/error-document-not-defined/' -->
+    <script>import "./scripts/draw.js";</script> 
+</body>
+</html>
