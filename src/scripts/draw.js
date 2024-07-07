@@ -45,6 +45,7 @@ if (typeof window !== 'undefined') {
         }
 
         function PointerDown(e) {
+            if (isDraggingPanel) return;
             if (e.buttons === 1) {
                 undoStack = [];
                 strokes.push([[e.pageX, e.pageY, e.pressure]]);
@@ -53,6 +54,7 @@ if (typeof window !== 'undefined') {
         }
 
         function PointerMove(e) {
+            if (isDraggingPanel) return;
             if (e.buttons === 1 && strokes.length > 0) {
             const lastStroke = strokes[strokes.length - 1];
             lastStroke.push([e.pageX, e.pageY, e.pressure]);

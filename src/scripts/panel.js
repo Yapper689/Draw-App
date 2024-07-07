@@ -1,9 +1,9 @@
 let wrapper = document.querySelector("#wrapper");
 let header = wrapper.querySelector("#header");
-isMouseDown = false;
-
+let isMouseDown = false;
 let offsetX = 0;
 let offsetY = 0;
+let isDraggingPanel = false;
 
 function handleMouseDown(event) {
   event.stopImmediatePropagation();
@@ -28,6 +28,7 @@ function toggleMinimize() {
 
 header.addEventListener("mousedown", (e) => {
   isMouseDown = true;
+  isDraggingPanel = true;
   offsetX = wrapper.offsetLeft - e.clientX;
   offsetY = wrapper.offsetTop - e.clientY;
   console.log(offsetX, offsetY);
@@ -48,4 +49,5 @@ document.addEventListener("mousemove", (e) => {
 
 document.addEventListener("mouseup", () => {
   isMouseDown = false;
+  isDraggingPanel = false;
 });
