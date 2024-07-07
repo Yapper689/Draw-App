@@ -6,5 +6,5 @@ import react from "@astrojs/react";
 export default defineConfig({
   integrations: [react()],
   site: 'https://yapper689.github.io',
-  base: 'Draw-App',
+  base: '/Draw-App',
 });
