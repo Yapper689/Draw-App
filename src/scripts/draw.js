@@ -91,6 +91,9 @@ if (typeof window !== 'undefined') {
 }
 
 
+
+
+
 /*
 // Old Canvas Stroke
 // Shoutout 'https://flaviocopes.com/error-document-not-defined/'
@@ -156,6 +159,10 @@ if (typeof window !== 'undefined') {
     })
 }
 */
+
+
+
+
 
 
 

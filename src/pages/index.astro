@@ -1,34 +1,45 @@
----
----
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Whiteboard</title>
-  <style>
-    * {
-        margin: 0;
-        padding: 0;
-    }
-
-    html, body {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-    }
-
-    svg {
-        width: 100vw;
-        height: 100vh;
-        touch-action: none;
-    }
-</style>
-</head>
-<body>
-    <svg id="freehand-canvas"><path></path></svg>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      * {
+          margin: 0;
+          padding: 0;
+      }
+      html, body {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>  
+    <svg id="freehand-canvas" class="absolute inset-0 w-full h-full touch-none z-0"><path></path></svg>
+    <div draggable id="wrapper" class="bg-white w-[5%] h-[420px] rounded-2xl absolute left-5 top-5 m-auto drop-shadow-lg z-10">
+      <div id="header" class="p-2 border-b border-gray-300 flex justify-center cursor-move">
+        <div id="actions" class="cursor-pointer" onmousedown="handleMouseDown()">
+          <i class="fa-sharp fa-solid fa-maximize text-xl text-purple-700" onclick="toggleMinimize()"></i>
+        </div>
+      </div>
+    </div>
     <script src="/src/scripts/draw.js"></script>
-</body>
+    <script is:inline src="/src/scripts/panel.js"></script>
+  </body>
 </html>
+
+
+
+
 
 
 <!-- Old Canvas
