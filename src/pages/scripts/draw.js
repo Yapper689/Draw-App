@@ -1,6 +1,8 @@
 // Shoutout https://codepen.io/bramus/pen/yLXpxRd
 // @ref https://github.com/steveruizok/perfect-freehand#rendering
-import { getStroke } from "perfect-freehand";
+
+// import { getStroke } from "perfect-freehand";
+import { getStroke } from "https://cdn.skypack.dev/perfect-freehand";
 
 if (typeof window !== 'undefined') {
     function getSvgPathFromStroke(stroke) {
