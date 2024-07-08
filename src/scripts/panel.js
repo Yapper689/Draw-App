@@ -1,19 +1,11 @@
 let wrapper = document.querySelector("#wrapper");
 let header = wrapper.querySelector("#header");
-let isMouseDown = false;
+let isPointerDown = false;
 let offsetX = 0;
 let offsetY = 0;
-let isDraggingPanel = false;
+window.isDraggingPanel = false;
 
-function handleMouseDown(event) {
-  event.stopImmediatePropagation();
-  event.stopPropagation();
-  event.preventDefault();
-}
-
-function toggleMinimize() {
-  const wrapper = document.querySelector("#wrapper");
-  const header = document.querySelector("#header");
+window.toggleMinimize = function() {
 
   const headerHeight = `${header.clientHeight}px`;
 
@@ -26,16 +18,16 @@ function toggleMinimize() {
   }
 }
 
-header.addEventListener("mousedown", (e) => {
-  isMouseDown = true;
+header.addEventListener("pointerdown", (e) => {
+  isPointerDown = true;
   isDraggingPanel = true;
   offsetX = wrapper.offsetLeft - e.clientX;
   offsetY = wrapper.offsetTop - e.clientY;
   console.log(offsetX, offsetY);
 });
 
-document.addEventListener("mousemove", (e) => {
-  if (!isMouseDown) return;
+document.addEventListener("pointermove", (e) => {
+  if (!isPointerDown) return;
   e.preventDefault();
   let left = e.clientX + offsetX;
   let top = e.clientY + offsetY;
@@ -47,7 +39,7 @@ document.addEventListener("mousemove", (e) => {
   wrapper.style.top = top + "px";
 });
 
-document.addEventListener("mouseup", () => {
-  isMouseDown = false;
+document.addEventListener("pointerup", () => {
+  isPointerDown = false;
   isDraggingPanel = false;
 });

@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+---
+---
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -27,13 +28,13 @@
     <svg id="freehand-canvas" class="absolute inset-0 w-full h-full touch-none z-0"><path></path></svg>
     <div draggable id="wrapper" class="bg-white w-[5%] h-[420px] rounded-2xl absolute left-5 top-5 m-auto drop-shadow-lg z-10">
       <div id="header" class="p-2 border-b border-gray-300 flex justify-center cursor-move">
-        <div id="actions" class="cursor-pointer" onmousedown="handleMouseDown()">
+        <div id="actions" class="cursor-pointer">
           <i class="fa-sharp fa-solid fa-maximize text-xl text-purple-700" onclick="toggleMinimize()"></i>
         </div>
       </div>
     </div>
+    <script src="/src/scripts/panel.js"></script>
     <script src="/src/scripts/draw.js"></script>
-    <script is:inline src="/src/scripts/panel.js"></script>
   </body>
 </html>
 
