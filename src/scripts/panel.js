@@ -1,5 +1,6 @@
 let wrapper = document.querySelector("#wrapper");
 let header = wrapper.querySelector("#header");
+let icon = wrapper.querySelector("#minimize");
 let isPointerDown = false;
 let offsetX = 0;
 let offsetY = 0;
@@ -12,9 +13,13 @@ window.toggleMinimize = function() {
   if (!wrapper.style.height || wrapper.style.height !== headerHeight) {
     wrapper.style.height = headerHeight;
     wrapper.classList.add('overflow-hidden');
+    icon.classList.remove('fa-minus');
+    icon.classList.add('fa-plus');
   } else {
     wrapper.style.height = '';
     wrapper.classList.remove('overflow-hidden');
+    icon.classList.remove('fa-plus');
+    icon.classList.add('fa-minus');
   }
 }
 
