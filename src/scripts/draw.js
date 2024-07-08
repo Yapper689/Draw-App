@@ -3,7 +3,15 @@
 
 import { getStroke } from "perfect-freehand";
 
+const colorInput = document.getElementById('color-input');
+let currentColor = colorInput.value;
+
+colorInput.addEventListener('input', function() {
+    currentColor = colorInput.value;
+});
+
 if (typeof window !== 'undefined') {
+
     function getSvgPathFromStroke(stroke) {
     if (!stroke.length) return '';
 
@@ -42,6 +50,7 @@ if (typeof window !== 'undefined') {
             )
             );
             path.setAttribute('d', paths.join(' '));
+            path.setAttribute('fill', currentColor);
         }
 
         function PointerDown(e) {
@@ -75,6 +84,12 @@ if (typeof window !== 'undefined') {
             render();
             }
         }
+
+        document.getElementById("clearCanvas").addEventListener("click", function() {
+            undoStack.push([...strokes]);
+            strokes = [];
+            path.setAttribute('d', '');
+        });
         
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'z') {

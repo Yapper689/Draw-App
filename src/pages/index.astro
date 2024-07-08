@@ -25,34 +25,36 @@
     </style>
   </head>
   <body>  
-    <svg id="freehand-canvas" class="absolute inset-0 w-full h-full touch-none z-0"><path></path></svg>
-    <div draggable id="wrapper" class="bg-white w-[100px] h-[50%] rounded-2xl absolute left-5 top-5 m-auto drop-shadow-lg flex flex-col">
-      <div id="header" class="p-2 border-b border-gray-300 flex justify-center cursor-move">
+    <svg id="freehand-canvas" class="absolute inset-0 w-full h-full touch-none z-0 dark:bg-black"><path></path></svg>
+    <div draggable id="wrapper" class="bg-white w-[100px] h-[350px] rounded-2xl absolute left-5 top-5 m-auto drop-shadow-lg flex flex-col dark:bg-slate-800">
+      <div id="header" class="p-2 border-b border-gray-300 flex justify-center cursor-move dark:border-slate-500">
         <div class="cursor-pointer">
           <i id="minimize" class="fa-solid fa-minus text-xl text-purple-700" onclick="toggleMinimize()"></i>
         </div>
       </div>
       <div id="body" class="flex flex-col items-center justify-center flex-grow space-y-5">
         <div class="cursor-pointer">
-          <i class="fa-solid fa-droplet text-xl text-purple-700"></i>
-        </div>
-        <div class="cursor-pointer">
-          <i class="fa-solid fa-eraser text-xl text-purple-700"></i>
+          <input id="color-input" type="color" class="rounded-full border-2 border-white h-7 w-7 block disabled:pointer-events-none drop-shadow-md dark:bg-slate-700 dark:border-slate-500" value="#000000">
         </div>
         <div class="cursor-pointer">
           <i class="fa-regular fa-image text-xl text-purple-700"></i>
         </div>
         <div class="cursor-pointer">
-          <i class="fa-solid fa-trash text-xl text-purple-700"></i>
+          <i id="saveImage" class="fa-regular fa-floppy-disk text-xl text-purple-700"></i>
         </div>
         <div class="cursor-pointer">
-          <i class="fa-solid fa-handshake text-xl text-purple-700"></i>
+          <i id="clearCanvas" class="fa-regular fa-trash-can text-xl text-purple-700"></i>
         </div>
         <div class="cursor-pointer">
-          <i class="fa-regular fa-sun text-xl text-purple-700"></i>
+          <i class="fa-regular fa-handshake text-xl text-purple-700"></i>
+        </div>
+        <div class="cursor-pointer">
+          <i id="dark" class="fa-regular fa-sun text-xl text-purple-700" onclick="toggleDarkMode()"></i>
         </div>
       </div>
     </div>
+    <!-- <script is:inline src="/node_modules/save-svg-as-png/lib/saveSvgAsPng.js"></script> -->
+    <script src="/src/scripts/saveSvgAsPng.js"></script>
     <script src="/src/scripts/panel.js"></script>
     <script src="/src/scripts/draw.js"></script>
   </body>

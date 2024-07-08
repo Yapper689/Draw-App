@@ -1,6 +1,7 @@
 let wrapper = document.querySelector("#wrapper");
 let header = wrapper.querySelector("#header");
-let icon = wrapper.querySelector("#minimize");
+let iconMinimize = wrapper.querySelector("#minimize");
+let iconDark = wrapper.querySelector("#dark");
 let isPointerDown = false;
 let offsetX = 0;
 let offsetY = 0;
@@ -13,13 +14,28 @@ window.toggleMinimize = function() {
   if (!wrapper.style.height || wrapper.style.height !== headerHeight) {
     wrapper.style.height = headerHeight;
     wrapper.classList.add('overflow-hidden');
-    icon.classList.remove('fa-minus');
-    icon.classList.add('fa-plus');
+    iconMinimize.classList.remove('fa-minus');
+    iconMinimize.classList.add('fa-plus');
   } else {
     wrapper.style.height = '';
     wrapper.classList.remove('overflow-hidden');
-    icon.classList.remove('fa-plus');
-    icon.classList.add('fa-minus');
+    iconMinimize.classList.remove('fa-plus');
+    iconMinimize.classList.add('fa-minus');
+  }
+}
+
+window.toggleDarkMode = function() {
+  const html = document.documentElement;
+  const isDarkMode = html.classList.contains('dark');
+
+  if (isDarkMode) {
+    html.classList.remove('dark');
+    iconDark.classList.remove('fa-moon');
+    iconDark.classList.add('fa-sun');
+  } else {
+    html.classList.add('dark');
+    iconDark.classList.remove('fa-sun');
+    iconDark.classList.add('fa-moon');
   }
 }
 
@@ -47,4 +63,8 @@ document.addEventListener("pointermove", (e) => {
 document.addEventListener("pointerup", () => {
   isPointerDown = false;
   isDraggingPanel = false;
+});
+
+document.getElementById("saveImage").addEventListener("click", function() {
+  saveSvgAsPng(document.getElementById("freehand-canvas"), "image.png");
 });
