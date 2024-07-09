@@ -1,3 +1,5 @@
+import { saveSvgAsPng } from 'save-svg-as-png';
+
 let wrapper = document.querySelector("#wrapper");
 let header = wrapper.querySelector("#header");
 let iconMinimize = wrapper.querySelector("#minimize");

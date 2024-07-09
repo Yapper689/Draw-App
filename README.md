@@ -1,9 +1,9 @@
-My file urls can never be read its crazy
+File urls can never be read its crazy
 
 # Features
 
 - [x] Built with [Astro](https://astro.build) and [Tailwind](https://tailwindcss.com/)
-- [x] Smooth Strokes powered by [perfect-freehand](https://github.com/steveruizok/perfect-freehand)
+- [x] SVG canvas powered by [perfect-freehand](https://github.com/steveruizok/perfect-freehand)
 - [x] Draggable Tool Panel
   - [x] Basic Paint Tools (sorta)
   - [x] Save As (PNG)
