@@ -44,7 +44,7 @@ header.addEventListener("pointerdown", (e) => {
   isDraggingPanel = true;
   offsetX = wrapper.offsetLeft - e.clientX;
   offsetY = wrapper.offsetTop - e.clientY;
-  console.log(offsetX, offsetY);
+  wrapper.style.transition = 'none';
 });
 
 document.addEventListener("pointermove", (e) => {
@@ -63,6 +63,7 @@ document.addEventListener("pointermove", (e) => {
 document.addEventListener("pointerup", () => {
   isPointerDown = false;
   isDraggingPanel = false;
+  wrapper.style.transition = 'all 0.1s ease-in-out';
 });
 
 document.getElementById("saveImage").addEventListener("click", function() {
