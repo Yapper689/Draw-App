@@ -35,6 +35,12 @@ if (typeof window !== 'undefined') {
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         svg.appendChild(path);
 
+        const storedStrokes = localStorage.getItem('storedStrokes');
+        if (storedStrokes) {
+            strokes = JSON.parse(storedStrokes);
+            render();
+        }
+
         svg.addEventListener('pointerdown', PointerDown);
         svg.addEventListener('pointermove', PointerMove);
 
@@ -51,6 +57,8 @@ if (typeof window !== 'undefined') {
             );
             path.setAttribute('d', paths.join(' '));
             path.setAttribute('fill', currentColor);
+            // Store strokes in localStorage
+            localStorage.setItem('storedStrokes', JSON.stringify(strokes));
         }
 
         function PointerDown(e) {
@@ -89,6 +97,7 @@ if (typeof window !== 'undefined') {
             undoStack.push([...strokes]);
             strokes = [];
             path.setAttribute('d', '');
+            localStorage.removeItem('storedStrokes'); // Clear strokes from localStorage
         });
         
         document.addEventListener('keydown', function(e) {
