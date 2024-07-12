@@ -8,5 +8,5 @@ File urls can never be read its crazy
   - [x] Basic Paint Tools (sorta)
   - [x] Save As (PNG)
   - [ ] Image Importing and Simple Editing
-  - [ ] Live Collaboration
+  - [x] Live Collaboration
   - [x] Light / Dark mode

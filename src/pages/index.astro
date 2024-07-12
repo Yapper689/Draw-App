@@ -14,19 +14,19 @@
     />
     <style>
       * {
-          margin: 0;
-          padding: 0;
+        margin: 0;
+        padding: 0;
       }
       html, body {
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
       }
     </style>
   </head>
-  <body>  
+  <body>
     <svg id="freehand-canvas" class="absolute inset-0 w-full h-full touch-none z-0 dark:bg-black"><path></path></svg>
-    <div draggable id="wrapper" class="bg-white w-[100px] h-[350px] rounded-2xl absolute left-5 top-5 m-auto drop-shadow-lg flex flex-col dark:bg-slate-800 transition-all ease-in-out duration-100">
+    <div draggable id="wrapper" class="bg-white w-[100px] h-[300px] rounded-2xl absolute left-5 top-5 m-auto drop-shadow-lg flex flex-col dark:bg-slate-800 transition-all ease-in-out duration-100">
       <div id="header" class="p-2 border-b border-gray-300 flex justify-center cursor-move dark:border-slate-500">
         <div class="cursor-pointer">
           <i id="minimize" class="fa-solid fa-minus text-xl text-purple-700" onclick="toggleMinimize()"></i>
@@ -46,47 +46,13 @@
           <i id="clearCanvas" class="fa-regular fa-trash-can text-xl text-purple-700"></i>
         </div>
         <div class="cursor-pointer">
-          <i class="fa-regular fa-handshake text-xl text-purple-700"></i>
-        </div>
-        <div class="cursor-pointer">
           <i id="dark" class="fa-regular fa-sun text-xl text-purple-700" onclick="toggleDarkMode()"></i>
         </div>
       </div>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
     <script src="/src/scripts/panel.js"></script>
     <script src="/src/scripts/draw.js"></script>
   </body>
 </html>
-
-
-
-
-
-
-<!-- Old Canvas
----
----
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whiteboard</title>
-    <style>
-        body {
-            overflow: hidden;
-        }
-        .whiteboard {
-            background-color: #ffffff;
-            max-width: 100%;
-            max-height: 100%;
-            cursor: crosshair;
-        }
-    </style>
-</head>
-<body>
-    <div class="whiteboard">
-        <canvas id="canvas" width="1920" height="1080"></canvas>
-    </div>
-    <script>import "./scripts/draw.js";</script> 
-</body>
-</html> -->

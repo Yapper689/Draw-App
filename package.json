@@ -16,6 +16,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "astro": "^4.11.5",
+    "firebase": "^10.12.3",
     "perfect-freehand": "^1.2.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

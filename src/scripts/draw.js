@@ -2,6 +2,23 @@
 // @ref https://github.com/steveruizok/perfect-freehand#rendering
 
 import { getStroke } from "perfect-freehand";
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set, onChildAdded, onChildChanged, onValue } from "firebase/database";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  databaseURL: "https://draw-c7619-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  apiKey: "AIzaSyBzQEY8JVj_hTU5ex4ACeTjPVdTts_Nipg",
+  authDomain: "draw-c7619.firebaseapp.com",
+  projectId: "draw-c7619",
+  storageBucket: "draw-c7619.appspot.com",
+  messagingSenderId: "663675275445",
+  appId: "1:663675275445:web:f37ce08832229681d956fc"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 const colorInput = document.getElementById('color-input');
 let currentColor = colorInput.value;
@@ -13,19 +30,19 @@ colorInput.addEventListener('input', function() {
 if (typeof window !== 'undefined') {
 
     function getSvgPathFromStroke(stroke) {
-    if (!stroke.length) return '';
+        if (!stroke.length) return '';
 
-    const d = stroke.reduce(
-        (acc, [x0, y0], i, arr) => {
-        const [x1, y1] = arr[(i + 1) % arr.length];
-        acc.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
-        return acc;
-        },
-        ['M', ...stroke[0], 'Q']
-    );
+        const d = stroke.reduce(
+            (acc, [x0, y0], i, arr) => {
+                const [x1, y1] = arr[(i + 1) % arr.length];
+                acc.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
+                return acc;
+            },
+            ['M', ...stroke[0], 'Q']
+        );
 
-    d.push('Z');
-    return d.join(' ');
+        d.push('Z');
+        return d.join(' ');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -35,29 +52,38 @@ if (typeof window !== 'undefined') {
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         svg.appendChild(path);
 
-        const storedStrokes = localStorage.getItem('storedStrokes');
-        if (storedStrokes) {
-            strokes = JSON.parse(storedStrokes);
+        const strokesRef = ref(db, 'strokes');
+
+        // Listen for new strokes
+        onChildAdded(strokesRef, (data) => {
+            const newStroke = data.val();
+            strokes.push(newStroke);
             render();
-        }
+        });
+
+        // Listen for changes to existing strokes
+        onChildChanged(strokesRef, (data) => {
+            const updatedStroke = data.val();
+            strokes[data.key] = updatedStroke;
+            render();
+        });
 
         svg.addEventListener('pointerdown', PointerDown);
         svg.addEventListener('pointermove', PointerMove);
 
         function render() {
             const paths = strokes.map(stroke =>
-            getSvgPathFromStroke(
-                getStroke(stroke, {
-                size: 16,
-                thinning: 0.5,
-                smoothing: 0.5,
-                streamline: 0.5,
-                })
-            )
+                getSvgPathFromStroke(
+                    getStroke(stroke.map(point => [point[0], point[1]]), {
+                        size: 16,
+                        thinning: 0.5,
+                        smoothing: 0.5,
+                        streamline: 0.5,
+                    })
+                )
             );
             path.setAttribute('d', paths.join(' '));
             path.setAttribute('fill', currentColor);
-            // Store strokes in localStorage
             localStorage.setItem('storedStrokes', JSON.stringify(strokes));
         }
 
@@ -65,7 +91,10 @@ if (typeof window !== 'undefined') {
             if (isDraggingPanel) return;
             if (e.buttons === 1) {
                 undoStack = [];
-                strokes.push([[e.pageX, e.pageY, e.pressure]]);
+                const stroke = [[e.pageX, e.pageY, e.pressure]];
+                strokes.push(stroke);
+                const newStrokeRef = ref(db, `strokes/${strokes.length - 1}`);
+                set(newStrokeRef, stroke);
                 render();
             }
         }
@@ -73,23 +102,25 @@ if (typeof window !== 'undefined') {
         function PointerMove(e) {
             if (isDraggingPanel) return;
             if (e.buttons === 1 && strokes.length > 0) {
-            const lastStroke = strokes[strokes.length - 1];
-            lastStroke.push([e.pageX, e.pageY, e.pressure]);
-            render();
+                const lastStroke = strokes[strokes.length - 1];
+                lastStroke.push([e.pageX, e.pageY, e.pressure]);
+                const lastStrokeRef = ref(db, `strokes/${strokes.length - 1}`);
+                set(lastStrokeRef, lastStroke);
+                render();
             }
         }
 
         function Undo() {
             if (strokes.length > 0) {
-            undoStack.push(strokes.pop());
-            render();
+                undoStack.push(strokes.pop());
+                render();
             }
         }
 
         function Redo() {
             if (undoStack.length > 0) {
-            strokes.push(undoStack.pop());
-            render();
+                strokes.push(undoStack.pop());
+                render();
             }
         }
 
@@ -102,15 +133,15 @@ if (typeof window !== 'undefined') {
         
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'z') {
-            e.preventDefault(); 
-            Undo();
+                e.preventDefault(); 
+                Undo();
             }
         });
 
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'y') {
-            e.preventDefault(); 
-            Redo();
+                e.preventDefault(); 
+                Redo();
             }
         });
     });
