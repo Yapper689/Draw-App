@@ -3,7 +3,7 @@
 
 import { getStroke } from "perfect-freehand";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, onChildAdded, onChildChanged, onValue } from "firebase/database";
+import { getDatabase, ref, set, remove, onChildAdded, onChildChanged, onChildRemoved, onValue } from "firebase/database";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -48,11 +48,14 @@ if (typeof window !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         let strokes = [];
         let undoStack = [];
+        let redoStack = [];
         const svg = document.querySelector('svg');
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         svg.appendChild(path);
 
         const strokesRef = ref(db, 'strokes');
+        const undoStackRef = ref(db, 'undoStack');
+        const redoStackRef = ref(db, 'redoStack');
 
         // Listen for new strokes
         onChildAdded(strokesRef, (data) => {
@@ -66,6 +69,21 @@ if (typeof window !== 'undefined') {
             const updatedStroke = data.val();
             strokes[data.key] = updatedStroke;
             render();
+        });
+
+        // Listen for removed strokes (clear canvas)
+        onChildRemoved(strokesRef, () => {
+            strokes = [];
+            render();
+        });
+
+        // Listen for undo/redo stack changes
+        onValue(undoStackRef, (snapshot) => {
+            undoStack = snapshot.val() || [];
+        });
+
+        onValue(redoStackRef, (snapshot) => {
+            redoStack = snapshot.val() || [];
         });
 
         svg.addEventListener('pointerdown', PointerDown);
@@ -88,9 +106,9 @@ if (typeof window !== 'undefined') {
         }
 
         function PointerDown(e) {
-            if (isDraggingPanel) return;
             if (e.buttons === 1) {
-                undoStack = [];
+                redoStack = [];
+                set(redoStackRef, redoStack);
                 const stroke = [[e.pageX, e.pageY, e.pressure]];
                 strokes.push(stroke);
                 const newStrokeRef = ref(db, `strokes/${strokes.length - 1}`);
@@ -100,7 +118,6 @@ if (typeof window !== 'undefined') {
         }
 
         function PointerMove(e) {
-            if (isDraggingPanel) return;
             if (e.buttons === 1 && strokes.length > 0) {
                 const lastStroke = strokes[strokes.length - 1];
                 lastStroke.push([e.pageX, e.pageY, e.pressure]);
@@ -112,25 +129,33 @@ if (typeof window !== 'undefined') {
 
         function Undo() {
             if (strokes.length > 0) {
-                undoStack.push(strokes.pop());
+                const lastStroke = strokes.pop();
+                undoStack.push(lastStroke);
+                set(undoStackRef, undoStack);
+                set(strokesRef, strokes);
                 render();
             }
         }
 
         function Redo() {
             if (undoStack.length > 0) {
-                strokes.push(undoStack.pop());
+                const stroke = undoStack.pop();
+                strokes.push(stroke);
+                set(strokesRef, strokes);
+                set(undoStackRef, undoStack);
                 render();
             }
         }
 
         document.getElementById("clearCanvas").addEventListener("click", function() {
             undoStack.push([...strokes]);
+            set(undoStackRef, undoStack);
             strokes = [];
+            remove(strokesRef);
             path.setAttribute('d', '');
             localStorage.removeItem('storedStrokes'); // Clear strokes from localStorage
         });
-        
+
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'z') {
                 e.preventDefault(); 
@@ -146,8 +171,6 @@ if (typeof window !== 'undefined') {
         });
     });
 }
-
-
 
 
 
