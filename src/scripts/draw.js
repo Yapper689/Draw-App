@@ -3,9 +3,8 @@
 
 import { getStroke } from "perfect-freehand";
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, remove, onChildAdded, onChildChanged, onChildRemoved, onValue } from "firebase/database";
+import { getDatabase, ref, set, remove, onChildAdded, onChildChanged, onChildRemoved, onValue, serverTimestamp, onDisconnect, increment } from "firebase/database";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   databaseURL: "https://draw-c7619-default-rtdb.asia-southeast1.firebasedatabase.app/",
   apiKey: "AIzaSyBzQEY8JVj_hTU5ex4ACeTjPVdTts_Nipg",
@@ -16,12 +15,12 @@ const firebaseConfig = {
   appId: "1:663675275445:web:f37ce08832229681d956fc"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const colorInput = document.getElementById('color-input');
 let currentColor = colorInput.value;
+let isOnlineMode = false;
 
 colorInput.addEventListener('input', function() {
     currentColor = colorInput.value;
@@ -46,7 +45,7 @@ if (typeof window !== 'undefined') {
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        let strokes = [];
+        let strokes = JSON.parse(localStorage.getItem('storedStrokes')) || [];
         let undoStack = [];
         let redoStack = [];
         const svg = document.querySelector('svg');
@@ -56,35 +55,77 @@ if (typeof window !== 'undefined') {
         const strokesRef = ref(db, 'strokes');
         const undoStackRef = ref(db, 'undoStack');
         const redoStackRef = ref(db, 'redoStack');
+        const userCountRef = ref(db, 'userCount');
 
-        // Listen for new strokes
-        onChildAdded(strokesRef, (data) => {
-            const newStroke = data.val();
-            strokes.push(newStroke);
-            render();
+        function updateUserCount(change) {
+            set(userCountRef, increment(change));
+        }
+
+        onValue(userCountRef, (snapshot) => {
+            const userCount = snapshot.val() || 0;
+            document.getElementById('user-count').innerText = `Users: ${userCount}`;
         });
 
-        // Listen for changes to existing strokes
-        onChildChanged(strokesRef, (data) => {
-            const updatedStroke = data.val();
-            strokes[data.key] = updatedStroke;
-            render();
-        });
+        const userRef = ref(db, `users/${Date.now()}`);
+        set(userRef, { joinedAt: serverTimestamp() });
+        onDisconnect(userRef).remove();
+        updateUserCount(1);
+        onDisconnect(userCountRef).set(increment(-1));
 
-        // Listen for removed strokes (clear canvas)
-        onChildRemoved(strokesRef, () => {
-            strokes = [];
-            render();
-        });
+        function initializeDatabase() {
+            strokes.forEach((stroke, index) => {
+                const strokeRef = ref(db, `strokes/${index}`);
+                set(strokeRef, stroke);
+            });
 
-        // Listen for undo/redo stack changes
-        onValue(undoStackRef, (snapshot) => {
-            undoStack = snapshot.val() || [];
-        });
+            onChildAdded(strokesRef, (data) => {
+                const newStroke = data.val();
+                strokes.push(newStroke);
+                render();
+            });
 
-        onValue(redoStackRef, (snapshot) => {
-            redoStack = snapshot.val() || [];
-        });
+            onChildChanged(strokesRef, (data) => {
+                const updatedStroke = data.val();
+                strokes[data.key] = updatedStroke;
+                render();
+            });
+
+            onChildRemoved(strokesRef, () => {
+                strokes = [];
+                render();
+            });
+
+            onValue(undoStackRef, (snapshot) => {
+                undoStack = snapshot.val() || [];
+            });
+
+            onValue(redoStackRef, (snapshot) => {
+                redoStack = snapshot.val() || [];
+            });
+        }
+
+        window.toggleOnlineMode = function() {
+            isOnlineMode = !isOnlineMode;
+            const toggleIcon = document.getElementById('toggleOnlineMode');
+            if (isOnlineMode) {
+                // Switch to online mode
+                strokes = [];
+                undoStack = [];
+                redoStack = [];
+                localStorage.removeItem('storedStrokes');
+                initializeDatabase();
+                toggleIcon.classList.remove('fa-handshake-slash');
+                toggleIcon.classList.add('fa-handshake');
+            } else {
+                // Switch to offline mode
+                strokes = [];
+                undoStack = [];
+                redoStack = [];
+                render();
+                toggleIcon.classList.remove('fa-handshake');
+                toggleIcon.classList.add('fa-handshake-slash');
+            }
+        }
 
         svg.addEventListener('pointerdown', PointerDown);
         svg.addEventListener('pointermove', PointerMove);
@@ -102,17 +143,23 @@ if (typeof window !== 'undefined') {
             );
             path.setAttribute('d', paths.join(' '));
             path.setAttribute('fill', currentColor);
-            localStorage.setItem('storedStrokes', JSON.stringify(strokes));
+            if (!isOnlineMode) {
+                localStorage.setItem('storedStrokes', JSON.stringify(strokes));
+            }
         }
 
         function PointerDown(e) {
             if (e.buttons === 1) {
                 redoStack = [];
-                set(redoStackRef, redoStack);
+                if (isOnlineMode) {
+                    set(redoStackRef, redoStack);
+                }
                 const stroke = [[e.pageX, e.pageY, e.pressure]];
                 strokes.push(stroke);
-                const newStrokeRef = ref(db, `strokes/${strokes.length - 1}`);
-                set(newStrokeRef, stroke);
+                if (isOnlineMode) {
+                    const newStrokeRef = ref(db, `strokes/${strokes.length - 1}`);
+                    set(newStrokeRef, stroke);
+                }
                 render();
             }
         }
@@ -121,8 +168,10 @@ if (typeof window !== 'undefined') {
             if (e.buttons === 1 && strokes.length > 0) {
                 const lastStroke = strokes[strokes.length - 1];
                 lastStroke.push([e.pageX, e.pageY, e.pressure]);
-                const lastStrokeRef = ref(db, `strokes/${strokes.length - 1}`);
-                set(lastStrokeRef, lastStroke);
+                if (isOnlineMode) {
+                    const lastStrokeRef = ref(db, `strokes/${strokes.length - 1}`);
+                    set(lastStrokeRef, lastStroke);
+                }
                 render();
             }
         }
@@ -131,8 +180,10 @@ if (typeof window !== 'undefined') {
             if (strokes.length > 0) {
                 const lastStroke = strokes.pop();
                 undoStack.push(lastStroke);
-                set(undoStackRef, undoStack);
-                set(strokesRef, strokes);
+                if (isOnlineMode) {
+                    set(undoStackRef, undoStack);
+                    set(strokesRef, strokes);
+                }
                 render();
             }
         }
@@ -141,19 +192,25 @@ if (typeof window !== 'undefined') {
             if (undoStack.length > 0) {
                 const stroke = undoStack.pop();
                 strokes.push(stroke);
-                set(strokesRef, strokes);
-                set(undoStackRef, undoStack);
+                if (isOnlineMode) {
+                    set(strokesRef, strokes);
+                    set(undoStackRef, undoStack);
+                }
                 render();
             }
         }
 
         document.getElementById("clearCanvas").addEventListener("click", function() {
             undoStack.push([...strokes]);
-            set(undoStackRef, undoStack);
+            if (isOnlineMode) {
+                set(undoStackRef, undoStack);
+            }
             strokes = [];
-            remove(strokesRef);
+            if (isOnlineMode) {
+                remove(strokesRef);
+            }
             path.setAttribute('d', '');
-            localStorage.removeItem('storedStrokes'); // Clear strokes from localStorage
+            localStorage.removeItem('storedStrokes');
         });
 
         document.addEventListener('keydown', function(e) {
@@ -171,6 +228,10 @@ if (typeof window !== 'undefined') {
         });
     });
 }
+
+
+
+
 
 
 

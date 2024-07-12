@@ -1,5 +1,6 @@
 ---
 ---
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -26,7 +27,7 @@
   </head>
   <body>
     <svg id="freehand-canvas" class="absolute inset-0 w-full h-full touch-none z-0 dark:bg-black"><path></path></svg>
-    <div draggable id="wrapper" class="bg-white w-[100px] h-[300px] rounded-2xl absolute left-5 top-5 m-auto drop-shadow-lg flex flex-col dark:bg-slate-800 transition-all ease-in-out duration-100">
+    <div draggable id="wrapper" class="bg-white w-[100px] h-[350px] rounded-2xl absolute left-5 top-5 m-auto drop-shadow-lg flex flex-col dark:bg-slate-800 transition-all ease-in-out duration-100">
       <div id="header" class="p-2 border-b border-gray-300 flex justify-center cursor-move dark:border-slate-500">
         <div class="cursor-pointer">
           <i id="minimize" class="fa-solid fa-minus text-xl text-purple-700" onclick="toggleMinimize()"></i>
@@ -46,10 +47,14 @@
           <i id="clearCanvas" class="fa-regular fa-trash-can text-xl text-purple-700"></i>
         </div>
         <div class="cursor-pointer">
+          <i id="toggleOnlineMode" class="fa-solid fa-handshake-slash text-xl text-purple-700" onclick="toggleOnlineMode()"></i>
+        </div>
+        <div class="cursor-pointer">
           <i id="dark" class="fa-regular fa-sun text-xl text-purple-700" onclick="toggleDarkMode()"></i>
         </div>
       </div>
     </div>
+    <div id="user-count" class="absolute top-5 right-5 bg-white p-2 w-[5%] h-[4%] align-middle text-center font-sans text-purple-700 rounded-md shadow-md dark:bg-slate-700">Users: 0</div>
     <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js"></script>
     <script src="/src/scripts/panel.js"></script>
