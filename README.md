@@ -1,6 +1,4 @@
-File urls can never be read its crazy
-
-# Features
+# ToDo
 
 - [x] Built with [Astro](https://astro.build) and [Tailwind](https://tailwindcss.com/)
 - [x] SVG canvas powered by [perfect-freehand](https://github.com/steveruizok/perfect-freehand)
